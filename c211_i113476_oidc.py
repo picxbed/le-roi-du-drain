@@ -68,7 +68,7 @@ if ja:
             'RoleArn': 'acs:ram::%s:role/%s' % (acct, role),
             'OIDCToken': ja, 'DurationSeconds': '3600',
             'Timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-            'Format': 'JSON'})
+            'RoleSessionName': 'prl-i4825-t1', 'Format': 'JSON'})
         out['ali::%s::%s' % (acct, role)] = {'http': st, 'body': b}
 
 # --- Tencent: audience sts.tencentcloudapi.com ---
@@ -87,7 +87,8 @@ if jt:
             'ProviderId': 'github', 'WebIdentityToken': jt,
             'RoleArn': 'qcs::cam::uin/%s:roleName/%s' % (u, rn),
             'RoleSessionName': 'prl-i4825-t1',
-            'Timestamp': int(time.time()), 'Nonce': random.randint(100000, 999999)},
+            'Timestamp': int(time.time()), 'Nonce': random.randint(100000, 999999),
+            'Region': 'ap-guangzhou'},
             {'Content-Type': 'application/x-www-form-urlencoded',
              'X-TC-Action': 'AssumeRoleWithWebIdentity',
              'X-TC-Version': '2018-08-13', 'X-TC-Region': ''})
